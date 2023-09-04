@@ -127,20 +127,6 @@ void NetworkManager::downloadDataFromServer(JsonManager *jdoc){
     QString base = jdoc->baseUrl;
     m_totalFileCount = jdoc->files.size();
 
-//    for (int i = 0; i < m_totalFileCount; i++) {
-//        QJsonObject jsonObject = jdoc->files.at(i).toObject();
-//        QUrl reqUrl(base + jsonObject.value("url").toString());
-//        QNetworkRequest areq;
-//        areq.setUrl(reqUrl);
-
-//        QNetworkReply *reply = assetManager->get(areq);
-//        qDebug()<<"requesting:"<<jsonObject.value("url").toString();
-//        // Connect each reply's finished signal to a slot for handling it
-//        connect(reply, &QNetworkReply::finished, this, &NetworkManager::onAssets);
-//        connect(reply, &QNetworkReply::readyRead, this, &NetworkManager::onReadingFromServer);
-//    }
-
-
     for (int i = 0; i < jdoc->files.size(); i++)
     {
         QJsonObject jsonObject = jdoc->files.at(i).toObject();
@@ -172,7 +158,6 @@ void NetworkManager::onLists(QNetworkReply *reply)
 }
 
 
-
 void NetworkManager::onAssets(QNetworkReply *reply)
 {
     if (!reply) {
@@ -193,9 +178,9 @@ void NetworkManager::onAssets(QNetworkReply *reply)
 
         if (!dir.exists()) {
             if (dir.mkpath(fileInfo.absolutePath())) {
-             qDebug() << "Directory structure created: " << fileInfo.absolutePath();
+//             qDebug() << "Directory structure created: " << fileInfo.absolutePath();
             } else {
-                qDebug() << "Failed to create directory structure: " << fileInfo.absolutePath();
+//                qDebug() << "Failed to create directory structure: " << fileInfo.absolutePath();
             }
         }
         QFile file(filePath);
@@ -211,12 +196,12 @@ void NetworkManager::onAssets(QNetworkReply *reply)
             m_downloadedFileCount++;
             float percent =(float) m_downloadedFileCount/(float)m_totalFileCount;
             emit downloadedFileCountChanged(percent, filePath);
+            delete source;
         }
         else
         {
              qDebug() << "Failed to create or save asset file: " << file.errorString();
         }
     }
-    reply->deleteLater();
 }
 
