@@ -5,9 +5,12 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     networkmanager.cpp \
-    jsonmanager.cpp
+    jsonmanager.cpp \
+    registryhandler.cpp
 
 RESOURCES += qml.qrc
+
+RC_FILE = Omochim.rc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -33,4 +36,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     networkmanager.h \
-    jsonmanager.h
+    jsonmanager.h \
+    registryhandler.h
+
+DISTFILES +=

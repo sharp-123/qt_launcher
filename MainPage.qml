@@ -1,6 +1,7 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.1
 import MyApp 1.0
+import Registry 1.0
 import QtQuick.Layouts 1.1
 import Qt.labs.settings 1.0
 
@@ -11,12 +12,17 @@ Rectangle {
     color: "#00000000"
     Settings {
         id: localStorage
-        property bool agreedToTerms:  false
+        property bool agreedToTermsFlag:  false
     }
+
+    property bool isEnabled: false
     NetworkManager {
         id: networkmanager
     }
 
+    RegistryHandler{
+        id:registryHandler
+    }
 
     Image {
         id: image
@@ -194,7 +200,8 @@ Rectangle {
                     onClicked: {
                         var url = "https://app.omochim.com/players/termsOfService";
                         Qt.openUrlExternally(url);
-
+                        registryHandler.writeRegistryValue("HKEY_CLASSES_ROOT\\omochim", "terms", "true")
+                        isEnabled = true;
                     }
                 }
                 Row{
@@ -209,8 +216,8 @@ Rectangle {
                     Button{
                         text:"同意する"
                         font.pixelSize: 16
+                        enabled: isEnabled
                         onClicked: {
-                            localStorage.agreedToTerms=true
                             terms.visible=false;
                             networkmanager.initialize();
                         }
@@ -225,7 +232,9 @@ Rectangle {
         }
     }
     Component.onCompleted:{
-        if (!localStorage.agreedToTerms) {
+
+        var agreeToTerms = registryHandler.readRegistryValue("HKEY_CLASSES_ROOT\\omochim", "terms")
+        if (agreeToTerms == "false") {
             // Show the terms and services dialog
             terms.visible=true;
         }

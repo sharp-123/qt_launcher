@@ -15,6 +15,7 @@
 #include <jsonmanager.h>
 #include <QQueue>
 #include <QProcess>
+#include <windows.h>
 
 class NetworkManager : public QObject
 {
@@ -27,9 +28,12 @@ private:
     int m_totalFileCount = 0;
     QNetworkAccessManager *manager;
     QNetworkAccessManager *assetManager;
+    QQueue<QNetworkRequest> m_downloadQueue;
+    QFile *m_file{nullptr};
     QString baseUrl;
     QUrl url_windows;
     QUrl url_mac;
+    QNetworkReply* m_currentReply {nullptr};
     bool jsonObjectIsUpdated(const QJsonObject obj1, const QJsonObject obj2);
 public:
     Q_INVOKABLE void initialize();
@@ -41,10 +45,14 @@ public:
     void downloadListsFromServer(); //request for downloading list
     void downloadDataFromServer(JsonManager *jdoc);
     JsonManager* newAndUpdatedObjects(JsonManager *fileDoc, JsonManager *downDoc);
+    void launchApp();
 
 public slots:
     void onLists(QNetworkReply *reply); //slot for list download finished
     void onAssets(QNetworkReply *reply);
+    void onBeginRequest();
+    void onReadyRead();
+    void onReply(QNetworkReply* reply);
 //    void onReadingFromServer();
 signals:
     void onReady();
@@ -52,6 +60,7 @@ signals:
     void loadingList();
     void error(QString msg);
     void versionNotify(QString version);
+    void beginDownload();
 
 };
 
